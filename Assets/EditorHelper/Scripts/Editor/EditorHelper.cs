@@ -5,14 +5,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System;
+using Editor_Helper;
 
 /// <summary>
 /// Инструмент для упрощения разработки, отладки и тестирования
 /// </summary>
 public class EditorHelper : EditorWindow
 {
-    private string version = "V 1.9.20";
-
     private Vector2 scrollPosGlobal = Vector2.zero;
     private Vector2 scrollPosEditor = Vector2.zero;
     private Vector2 scrollTempPrefs = Vector2.zero;
@@ -30,13 +29,7 @@ public class EditorHelper : EditorWindow
 
     private bool isActiveEditor = false;
     private bool isEditorSave = false;
-    private bool isActiveClearPrefs = true;
-    private bool isActiveCheats = true;
-    private bool isActiveTimeScale = true;
-    private bool isActiveScenes = true;
-    private bool isActiveAutoSave = true;
-    private bool isActiveScreenShot = true;
-
+    
     private bool isViewClearPrefs = false;
     private bool isViewClearEditorPrefs = false;
     private bool isViewCheats = false;
@@ -58,45 +51,7 @@ public class EditorHelper : EditorWindow
     private List <string> listPathsAllScriptsWithPlayerPrefs = new List<string>();
     private List <string> listAllPrefs = new List<string>();
     private List <string> listHardPrefs = new List<string>();
-
-    #region StringsTutors
-    private string tutorGlobal = "\tEditorHelper - предназначен для упрощения разработки и тестирования приложений. " +
-    	                         "Внизу есть вкладка Editor где можно включать, отключать и настраивать имеющиеся функции.\n" +
-                                 "\tБольшинство параметров окна сохраняются в EditorPrefs и привзяваются к productName, " +
-                                 "поэтому при смене названия имейте ввиду, что почти все настройки редактора собьются.";
-    private string tutorTimeScale = "\tУменьшение TimeScale позволяет (в большинстве случаев) замедлять игровой " +
-    	                            "процесс. В настройках можно выставить минимальное и максимальное значение. " +
-    	                            "По умолчанию минимальное значение стоит 0.00001f, тк при 0 аппа может ставиться на паузу.";
-    private string tutorScenes = "\tВкладка Scenes позволяет быстро переходить между сценами. По умолчанию редактор " +
-    	                         "подтягивает сцены забитые в BuildSettings. В настройках можно добавлять, удалять и " +
-    	                         "переименовывать сцены.";
-    private string tutorAutoSave = "\tВкладка AutoSaveScene позволяет в процессе разработки автоматических сохранять " +
-                                   "сцену. Выставите интервал сохранения. Галочка Use Notification AutoSave отвечает " +
-                                   "за окно подтверждения сохранения, Use AutoSave за включение функции автосохранения.";
-    private string tutorClearPrefs = "\tВкладка с кнопкой очистки префсов. Содержит скрытую кнопки очистки EditorPrefs " +
-    	                             "(Использовать в случае крайней необходимости!)";
-    private string tutorScreenShots = "\tВо вкладке ScreenShot есть кнопка для создания скриншотов разных разрешений " +
-    	                              "одним нажатием.\n" +
-    	                              "\t1) Выберите папку куда будут сохраняться скрины. Если её не задавать они будут по " +
-                                      "умолчанию сохраняться в папку Screenshots в папке с проектом. Адреса папок сохранятся " +
-                                      "идивидуально для каждого проекта.\n" +
-                                      "\t2) Добавьте разрешение для которых надо сделать скрины. Разрешения добавляются " +
-                                      "на все платформы и хранятся в EditorPrefs, поэтому будут кочевать в другие проекты, на " +
-                                      "другие платформы и на другие версии юнити. Они добавляются в редактор при запуске " +
-                                      "EditorHelper и проверяются/добавляются при сохранении скриншота.\n" +
-                                      "\t3) Если надо сделать скрины для конкретного разрешения или группы, уберите галочки " +
-                                      "у неактуальных разрешений.\n" +
-                                      "\t4) Галочка DisableInterface отвечает за отключение интерфейса при создании скрина.\n" +
-                                      "\tPS: Скрины делаются с задержкой 0,5 секунд, тк они не сразу сохраняются.";
-    private string tutorCheats = "\tВкладка Cheats отвечает за быстрое изменение префсов. \n" +
-    	                         "\t1) В настройках можно добавлять префсы руками поштучно. (Add cheat)\n" +
-    	                         "\t2) Найти автоматически в проекте. (Find all prefs). " +
-                                 "Автоматически префсы находятся только с указанием простых ключей (PlayerPrefs.SetInt(\"Gold\",gold)).\n" +
-                                 "\t Скрипт умеет работать как с PlayerPrefs так и с PlayerPrefsHelper (если в нем есть SetBool!). Для использования " +
-                                 "второго надо добавить директиву PLAYER_PREFS_HELPER, она добавляется автоматически при открытие " +
-                                 "окна. Но если вдруг надо удалить или добавить есть кнопка FIX PLAYER_PREFS_HELPER!";
-    #endregion StringsTutors
-
+      
     #region StartMethods
     [MenuItem("Tools/EditorHelper")]
     /// <summary>
@@ -119,7 +74,7 @@ public class EditorHelper : EditorWindow
 
     private void Awake()
     {
-        EditorUtility.DisplayDialog("Внимание!", tutorGlobal + "\n\n" + version, "Ok");
+        EditorUtility.DisplayDialog("Внимание!", EH_StaticParametrs.TUTOR_IN_START + "\n\n" + EH_StaticParametrs.VERSION, "Ok");
         classScreenShot = new ClassScreenShot();
         FindScriptPlayerPrefsHelper();
         CheckClassScene();
@@ -347,7 +302,7 @@ public class EditorHelper : EditorWindow
                                             EditorStyles.boldLabel);
         if (isActiveEditor)
         {
-            GUILayout.Label(version, EditorStyles.boldLabel);
+            GUILayout.Label(EH_StaticParametrs.VERSION, EditorStyles.boldLabel);
             ViewEditorTimeScale();
             ViewEditorScenes();
             ViewEditorAutoSave();
@@ -376,16 +331,16 @@ public class EditorHelper : EditorWindow
     private void ViewEditorTimeScale ()
     {
         EditorGUILayout.BeginHorizontal();
-        isActiveTimeScale = GUILayout.Toggle(isActiveTimeScale, "isActiveTimeScale");
+        EH_StaticParametrs.IsActiveTimeScale = GUILayout.Toggle(EH_StaticParametrs.IsActiveTimeScale, "isActiveTimeScale");
 
         if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
         {
             EditorUtility.DisplayDialog("",
-                                                    tutorTimeScale,
-                                                    "Ok");
+                                        EH_StaticParametrs.TUTUR_TIME_SCALE,
+                                        "Ok");
         }
         EditorGUILayout.EndHorizontal();
-        if (isActiveTimeScale)
+        if (EH_StaticParametrs.IsActiveTimeScale)
         {
             TimeScaleEditor();
         }
@@ -397,15 +352,15 @@ public class EditorHelper : EditorWindow
     private void ViewEditorScenes()
     {
         EditorGUILayout.BeginHorizontal();
-        isActiveScenes = GUILayout.Toggle(isActiveScenes, "isActiveScenes");
+        EH_StaticParametrs.IsActiveScenes = GUILayout.Toggle(EH_StaticParametrs.IsActiveScenes, "isActiveScenes");
         if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
         {
             EditorUtility.DisplayDialog("",
-                                                    tutorScenes,
+                                                    EH_StaticParametrs.TUTOR_SCENES,
                                                     "Ok");
         }
         EditorGUILayout.EndHorizontal();
-        if (isActiveScenes)
+        if (EH_StaticParametrs.IsActiveScenes)
         {
             ViewScenesChange();
         }
@@ -417,11 +372,11 @@ public class EditorHelper : EditorWindow
     private void ViewEditorAutoSave()
     {
         EditorGUILayout.BeginHorizontal();
-        isActiveAutoSave = GUILayout.Toggle(isActiveAutoSave, "isActiveAutoSave");
+        EH_StaticParametrs.IsActiveAutoSave = GUILayout.Toggle(EH_StaticParametrs.IsActiveAutoSave, "isActiveAutoSave");
         if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
         {
             EditorUtility.DisplayDialog("",
-                                                    tutorAutoSave,
+                                                    EH_StaticParametrs.TUTOR_AUTO_SAVE,
                                                     "Ok");
         }
         EditorGUILayout.EndHorizontal();       
@@ -433,11 +388,11 @@ public class EditorHelper : EditorWindow
     private void ViewEditorClearPrefs()
     {
         EditorGUILayout.BeginHorizontal();
-        isActiveClearPrefs = GUILayout.Toggle(isActiveClearPrefs, "isActiveClearPrefs");
+        EH_StaticParametrs.IsActiveClearPrefs = GUILayout.Toggle(EH_StaticParametrs.IsActiveClearPrefs, "isActiveClearPrefs");
         if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
         {
             EditorUtility.DisplayDialog("",
-                                                    tutorClearPrefs,
+                                                    EH_StaticParametrs.TUTOR_CLEAR_PREFS,
                                                     "Ok");
         }
         EditorGUILayout.EndHorizontal();
@@ -449,15 +404,15 @@ public class EditorHelper : EditorWindow
     private void ViewEditorScreenShot()
     {
         EditorGUILayout.BeginHorizontal();
-        isActiveScreenShot = GUILayout.Toggle(isActiveScreenShot, "isActiveScreenShot");
+        EH_StaticParametrs.IsActiveScreenShot = GUILayout.Toggle(EH_StaticParametrs.IsActiveScreenShot, "isActiveScreenShot");
         if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
         {
             EditorUtility.DisplayDialog("",
-                                                    tutorScreenShots,
+                                                    EH_StaticParametrs.TUTOR_SCREEN_SHOTS,
                                                     "Ok");
         }
         EditorGUILayout.EndHorizontal();
-        if (isActiveScreenShot)
+        if (EH_StaticParametrs.IsActiveScreenShot)
         {
             ViewScreenShotParams();
         }
@@ -469,16 +424,16 @@ public class EditorHelper : EditorWindow
     private void ViewEditorChets()
     {
         EditorGUILayout.BeginHorizontal();
-        isActiveCheats = GUILayout.Toggle(isActiveCheats, "isActiveCheats");
+        EH_StaticParametrs.IsActiveCheats = GUILayout.Toggle(EH_StaticParametrs.IsActiveCheats, "isActiveCheats");
 
         if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
         {
             EditorUtility.DisplayDialog("",
-                                                    tutorCheats,
+                                                    EH_StaticParametrs.TUTOR_CHEATS,
                                                     "Ok");
         }
         EditorGUILayout.EndHorizontal();
-        if (isActiveCheats)
+        if (EH_StaticParametrs.IsActiveCheats)
         {
             ViewCheatsEdit();
         }
@@ -490,12 +445,12 @@ public class EditorHelper : EditorWindow
     private void SaveEditorParams()
     {
         isEditorSave = true;
-        EditorPrefs.SetBool(Application.productName + "isActiveCheats", isActiveCheats);
-        EditorPrefs.SetBool(Application.productName + "isActiveTimeScale", isActiveTimeScale);
-        EditorPrefs.SetBool(Application.productName + "isActiveScenes", isActiveScenes);
-        EditorPrefs.SetBool(Application.productName + "isActiveAutoSave", isActiveAutoSave);
-        EditorPrefs.SetBool(Application.productName + "isActiveClearPrefs", isActiveClearPrefs);
-        EditorPrefs.SetBool(Application.productName + "isActiveScreenShot", isActiveScreenShot);
+        EditorPrefs.SetBool(Application.productName + "isActiveCheats", EH_StaticParametrs.IsActiveCheats);
+        EditorPrefs.SetBool(Application.productName + "isActiveTimeScale", EH_StaticParametrs.IsActiveTimeScale);
+        EditorPrefs.SetBool(Application.productName + "isActiveScenes", EH_StaticParametrs.IsActiveScenes);
+        EditorPrefs.SetBool(Application.productName + "isActiveAutoSave", EH_StaticParametrs.IsActiveAutoSave);
+        EditorPrefs.SetBool(Application.productName + "isActiveClearPrefs", EH_StaticParametrs.IsActiveClearPrefs);
+        EditorPrefs.SetBool(Application.productName + "isActiveScreenShot", EH_StaticParametrs.IsActiveScreenShot);
     }
 
     /// <summary>
@@ -504,12 +459,12 @@ public class EditorHelper : EditorWindow
     private void LoadEditorParams()
     {
         isEditorSave = false;
-        isActiveCheats = EditorPrefs.GetBool(Application.productName + "isActiveCheats", true);
-        isActiveTimeScale = EditorPrefs.GetBool(Application.productName + "isActiveTimeScale", true);
-        isActiveScenes = EditorPrefs.GetBool(Application.productName + "isActiveScenes", true);
-        isActiveAutoSave = EditorPrefs.GetBool(Application.productName + "isActiveAutoSave", true);
-        isActiveClearPrefs = EditorPrefs.GetBool(Application.productName + "isActiveClearPrefs", true);
-        isActiveScreenShot = EditorPrefs.GetBool(Application.productName + "isActiveScreenShot", true);
+        EH_StaticParametrs.IsActiveCheats = EditorPrefs.GetBool(Application.productName + "isActiveCheats", true);
+        EH_StaticParametrs.IsActiveTimeScale = EditorPrefs.GetBool(Application.productName + "isActiveTimeScale", true);
+        EH_StaticParametrs.IsActiveScenes = EditorPrefs.GetBool(Application.productName + "isActiveScenes", true);
+        EH_StaticParametrs.IsActiveAutoSave = EditorPrefs.GetBool(Application.productName + "isActiveAutoSave", true);
+        EH_StaticParametrs.IsActiveClearPrefs = EditorPrefs.GetBool(Application.productName + "isActiveClearPrefs", true);
+        EH_StaticParametrs.IsActiveScreenShot = EditorPrefs.GetBool(Application.productName + "isActiveScreenShot", true);
     }
     #endregion Editor
 
@@ -519,7 +474,7 @@ public class EditorHelper : EditorWindow
     /// </summary>
     private void ViewGuiCheats()
     {
-        if (isActiveCheats)
+        if (EH_StaticParametrs.IsActiveCheats)
         {
             isViewCheats = GUILayout.Toggle(isViewCheats,
                                             (isViewCheats == true ? "↑  " : "↓  ") + "Cheats",
@@ -840,20 +795,6 @@ public class EditorHelper : EditorWindow
                 FindAllPrefsInProject();
             }
 
-            //Временные кнопки для тестов, для пошагового поиска 
-            //if (GUILayout.Button("DoScripts" +
-            //(listAllScriptsWithPlayerPrefs.Count == 0 ? "" : " (" + listAllScriptsWithPlayerPrefs.Count + ")")))
-            //{
-            //    DoScripts();
-            //}
-
-            //Временные кнопки для тестов, для пошагового поиска 
-            //if (GUILayout.Button("Find easy prefs" +
-            //(listAllPrefs.Count == 0 ? "" : " (" + listAllPrefs.Count + ")")))
-            //{
-            //    FindAllPrefsInProject();
-            //}
-
             ViewTempCheats();
 
             GUILayout.Label("--------------------", EditorStyles.boldLabel);
@@ -1113,7 +1054,7 @@ public class EditorHelper : EditorWindow
     /// </summary>
     private void ViewGuiTimeScale()
     {
-        if (isActiveTimeScale)
+        if (EH_StaticParametrs.IsActiveTimeScale)
         {
             isViewTimeScale = GUILayout.Toggle(isViewTimeScale,
             (isViewTimeScale == true ? "↑  " : "↓  ") + "Change TimeScale",
@@ -1148,7 +1089,7 @@ public class EditorHelper : EditorWindow
     ///  перемещать по панели от часто используемых кнопок)</summary>
     private void ViewGuiClearPrefs()
     {
-        if (isActiveClearPrefs)
+        if (EH_StaticParametrs.IsActiveClearPrefs)
         {
             isViewClearPrefs = GUILayout.Toggle(isViewClearPrefs,
                                                 (isViewClearPrefs == true ? "↑  " : "↓  ") + "ClearPrefs",
@@ -1207,7 +1148,7 @@ public class EditorHelper : EditorWindow
     /// </summary>
     private void ViewGuiScenesButtons()
     {
-        if (isActiveScenes)
+        if (EH_StaticParametrs.IsActiveScenes)
         {
             isViewScenes = GUILayout.Toggle(isViewScenes,
                                             (isViewScenes == true ? "↑  " : "↓  ") + "Scenes",
@@ -1333,7 +1274,7 @@ public class EditorHelper : EditorWindow
     #region AutoSaveMethods
     private void ViewGuiAutoSave()
     {
-        if (isActiveAutoSave)
+        if (EH_StaticParametrs.IsActiveAutoSave)
         {
             isViewAutoSave = GUILayout.Toggle(isViewAutoSave,
                                               (isViewAutoSave == true ? "↑  " : "↓  ") + "AutoSaveScene",
@@ -1434,7 +1375,7 @@ public class EditorHelper : EditorWindow
     /// </summary>
     private void ViewGuiScreenShot()
     {
-        if (isActiveScreenShot)
+        if (EH_StaticParametrs.IsActiveScreenShot)
         {
             isViewScreenShot = GUILayout.Toggle(isViewScreenShot,
                                                 (isViewScreenShot == true ? "↑  " : "↓  ") + "ScreenShot",
@@ -1495,7 +1436,7 @@ public class EditorHelper : EditorWindow
         {
             classScreenShot.LastTime = EditorApplication.timeSinceStartup-0.6f;
             classScreenShot.CurrentTimeScale = Time.timeScale;
-            Time.timeScale = 0.000001f;
+            Time.timeScale = float.Epsilon;
             classScreenShot.CurrentScreenNumber = -1;
             if (isViewTimeScale)
             {
@@ -1526,8 +1467,6 @@ public class EditorHelper : EditorWindow
                                                    EditorStyles.boldLabel);
         if (isViewScreenShotParams)
         {
-
-
             if (GUILayout.Button("Add Folder For ScreenShots"))
             {
                 classScreenShot.PathFolderForScreenShot = EditorUtility.OpenFolderPanel("Folder For ScreenShots", "", "");
