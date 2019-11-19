@@ -7,7 +7,7 @@ using System.Reflection;
 using System;
 
 /// <summary>
-/// Моё окно для упрощения разработки, отладки и тестирования
+/// Инструмент для упрощения разработки, отладки и тестирования
 /// </summary>
 public class EditorHelper : EditorWindow
 {
@@ -25,7 +25,7 @@ public class EditorHelper : EditorWindow
     private ClassAutoSave classAutoSave = new ClassAutoSave();
     private ClassScreenShot classScreenShot = null;
 
-    private float minTimeScale = 0.000001f;
+    private float minTimeScale = float.Epsilon;
     private float maxTimeScale = 2f;
 
     private bool isActiveEditor = false;
@@ -66,7 +66,7 @@ public class EditorHelper : EditorWindow
                                  "поэтому при смене названия имейте ввиду, что почти все настройки редактора собьются.";
     private string tutorTimeScale = "\tУменьшение TimeScale позволяет (в большинстве случаев) замедлять игровой " +
     	                            "процесс. В настройках можно выставить минимальное и максимальное значение. " +
-    	                            "По умолчанию минимальное значение стоит 0.00001f, тк при 0 аппа может ставиться на пазу.";
+    	                            "По умолчанию минимальное значение стоит 0.00001f, тк при 0 аппа может ставиться на паузу.";
     private string tutorScenes = "\tВкладка Scenes позволяет быстро переходить между сценами. По умолчанию редактор " +
     	                         "подтягивает сцены забитые в BuildSettings. В настройках можно добавлять, удалять и " +
     	                         "переименовывать сцены.";
@@ -98,7 +98,7 @@ public class EditorHelper : EditorWindow
     #endregion StringsTutors
 
     #region StartMethods
-    [MenuItem("MyTools/EditorHelper")]
+    [MenuItem("Tools/EditorHelper")]
     /// <summary>
     /// Инициализация
     /// Обязательно должна быть статичной!!!!
@@ -119,7 +119,7 @@ public class EditorHelper : EditorWindow
 
     private void Awake()
     {
-        EditorUtility.DisplayDialog("", tutorGlobal + "\n\n" + version, "Ok");
+        EditorUtility.DisplayDialog("Внимание!", tutorGlobal + "\n\n" + version, "Ok");
         classScreenShot = new ClassScreenShot();
         FindScriptPlayerPrefsHelper();
         CheckClassScene();
@@ -137,7 +137,7 @@ public class EditorHelper : EditorWindow
         string[] assetPaths = AssetDatabase.GetAllAssetPaths();
         foreach (string assetPath in assetPaths)
         {
-            if (assetPath.Contains("PlayerPrefsHelper.cs")) // or .js if you want
+            if (assetPath.Contains("PlayerPrefsHelper.cs"))
             {
                 //Если даже PlayerPrefsHelper существует, но в нём нет SetBool 
                 //скрипт сломается, поэтому добавляем проверку и игнорим
@@ -177,8 +177,6 @@ public class EditorHelper : EditorWindow
     /// </summary>
     private void CheckClassScene()
     {
-        //Для тестов, пусть лежит тут
-        //ClearPrefsButtonScene();
         if (!EditorPrefs.HasKey(Application.productName + "PathScene0"))
         {
             for (int i = 0; i < EditorBuildSettings.scenes.Length; i++)
