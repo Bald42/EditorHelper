@@ -7,7 +7,7 @@
 !/ProjectSettings/
 !/Packages/
 !.gitignore
-!.unitypackage
+!*.unitypackage
 
 # OS Stuff
 .DS_Store
