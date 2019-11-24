@@ -30,7 +30,7 @@ namespace Editor_Helper
             window.Show();
         }
 
-        private void OnDisable()
+        private void OnDestroy ()
         {
             EH_StaticParametrs.SaveEditorParams();
         }
@@ -53,17 +53,12 @@ namespace Editor_Helper
         private void ViewEditor()
         {
             GUILayout.Label(EH_StaticParametrs.VERSION, EditorStyles.boldLabel);
-            Debug.Log("0");
-
             ViewEditorTimeScale();
             ViewEditorScenes();
-
-            /*
             ViewEditorAutoSave();
-            ViewEditorClearPrefs();
+            ViewEditorClearPrefs();            
             ViewEditorScreenShot();
             ViewEditorChets();
-            */
         }
 
         /// <summary>
@@ -200,6 +195,206 @@ namespace Editor_Helper
                 }
             }
             GUILayout.Label("------------------------", EditorStyles.boldLabel);
+        }
+
+        /// <summary>
+        /// Отрисовываем настройки автосохранения сцен
+        /// </summary>
+        private void ViewEditorAutoSave()
+        {
+            EditorGUILayout.BeginHorizontal();
+            EH_StaticParametrs.IsActiveAutoSave = GUILayout.Toggle(EH_StaticParametrs.IsActiveAutoSave, "isActiveAutoSave");
+
+            if (GUILayout.Button("Change"))
+            {
+                EH_StaticParametrs.IsActiveAutoSave = !EH_StaticParametrs.IsActiveAutoSave;
+                EditorHelper.Instance.Repaint();
+            }
+
+            if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
+            {
+                EditorUtility.DisplayDialog("",
+                                                        EH_StaticParametrs.TUTOR_AUTO_SAVE,
+                                                        "Ok");
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
+        /// <summary>
+        /// Отрисовываем настройки очистки префсов
+        /// </summary>
+        private void ViewEditorClearPrefs()
+        {
+            EditorGUILayout.BeginHorizontal();
+            EH_StaticParametrs.IsActiveClearPrefs = GUILayout.Toggle(EH_StaticParametrs.IsActiveClearPrefs, "isActiveClearPrefs");
+
+            if (GUILayout.Button("Change"))
+            {
+                EH_StaticParametrs.IsActiveClearPrefs = !EH_StaticParametrs.IsActiveClearPrefs;
+                EditorHelper.Instance.Repaint();
+            }
+
+            if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
+            {
+                EditorUtility.DisplayDialog("",
+                                                        EH_StaticParametrs.TUTOR_CLEAR_PREFS,
+                                                        "Ok");
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
+        /// <summary>
+        /// Отрисовываем настройки скринов
+        /// </summary>
+        private void ViewEditorScreenShot()
+        {
+            EditorGUILayout.BeginHorizontal();
+            EH_StaticParametrs.IsActiveScreenShot = GUILayout.Toggle(EH_StaticParametrs.IsActiveScreenShot, "isActiveScreenShot");
+
+            if (GUILayout.Button("Change"))
+            {
+                EH_StaticParametrs.IsActiveScreenShot = !EH_StaticParametrs.IsActiveScreenShot;
+                EditorHelper.Instance.Repaint();
+            }
+
+            if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
+            {
+                EditorUtility.DisplayDialog("",
+                                                        EH_StaticParametrs.TUTOR_SCREEN_SHOTS,
+                                                        "Ok");
+            }
+            EditorGUILayout.EndHorizontal();
+            if (EH_StaticParametrs.IsActiveScreenShot)
+            {
+                ViewScreenShotParams();
+            }
+        }
+
+        /// <summary>
+        /// Отрисовываем настройки скринов
+        /// </summary>
+        private void ViewScreenShotParams()
+        {
+            if (GUILayout.Button("Add Folder For ScreenShots"))
+            {
+                EditorHelper.Instance.classScreenShot.PathFolderForScreenShot = EditorUtility.OpenFolderPanel("Folder For ScreenShots", "", "");
+                EditorPrefs.SetString(Application.productName + "PathForScreenShots", EditorHelper.Instance.classScreenShot.PathFolderForScreenShot);
+            }
+
+            EditorHelper.Instance.classScreenShot.NameResolution =
+            EditorGUILayout.TextField("NameResolution = ", EditorHelper.Instance.classScreenShot.NameResolution);
+            EditorHelper.Instance.classScreenShot.Width =
+            EditorGUILayout.IntField("Width = ", EditorHelper.Instance.classScreenShot.Width);
+            EditorHelper.Instance.classScreenShot.Height =
+            EditorGUILayout.IntField("Height = ", EditorHelper.Instance.classScreenShot.Height);
+
+            GUILayout.Space(10f);
+
+            if (GUILayout.Button("Add Resolution"))
+            {
+                if (EditorHelper.Instance.classScreenShot.Width != 0 &&
+                    EditorHelper.Instance.classScreenShot.Height != 0 &&
+                    EditorHelper.Instance.classScreenShot.NameResolution != "")
+                {
+                    AddResolution();
+                }
+                else
+                {
+                    Debug.Log("<color=red>Заполни все поля для нового разрешения</color>");
+                }
+            }
+
+            if (GUILayout.Button("Delete last Resolution"))
+            {
+                if (EditorUtility.DisplayDialog("",
+                     "Удаляем последнее разрешение?",
+                     "Удалить",
+                     "Отмена"))
+                {
+                    if (EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots.Count > 0)
+                    {
+                        EditorPrefs.DeleteKey("Resolution" +
+                        (EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots.Count - 1) + "NameResolution");
+                        EditorPrefs.DeleteKey("Resolution" +
+                        (EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots.Count - 1) + "Width");
+                        EditorPrefs.DeleteKey("Resolution" +
+                        (EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots.Count - 1) + "Height");
+
+                        EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots.RemoveAt(EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots.Count - 1);
+                    }
+                }
+            }
+            GUILayout.Label("------------------------", EditorStyles.boldLabel);
+        }
+        
+
+        /// <summary>
+        /// Добавляем новое разрешение
+        /// </summary>
+        public void AddResolution()
+        {
+            if (EditorHelper.ClassScreenShot.FindSize(EditorHelper.ClassScreenShot.GetCurrentGroupType(), EditorHelper.Instance.classScreenShot.NameResolution) == -1)
+            {
+                EditorHelper.ClassScreenShot.AddCustomSize(EditorHelper.ClassScreenShot.GetCurrentGroupType(),
+                    EditorHelper.Instance.classScreenShot.Width,
+                    EditorHelper.Instance.classScreenShot.Height,
+                    EditorHelper.Instance.classScreenShot.NameResolution);
+
+                EditorHelper.ClassResolution tempClassResolution = new EditorHelper.ClassResolution();
+                EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots.Add(tempClassResolution);
+
+                EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots
+                [EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots.Count - 1].Width = EditorHelper.Instance.classScreenShot.Width;
+
+                EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots
+                [EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots.Count - 1].Height = EditorHelper.Instance.classScreenShot.Height;
+
+                EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots
+                [EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots.Count - 1].NameResolution = EditorHelper.Instance.classScreenShot.NameResolution;
+
+                EditorPrefs.SetString("Resolution" + (EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots.Count - 1) + "NameResolution",
+                EditorHelper.Instance.classScreenShot.NameResolution);
+                EditorPrefs.SetInt("Resolution" + (EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots.Count - 1) + "Width",
+                EditorHelper.Instance.classScreenShot.Width);
+                EditorPrefs.SetInt("Resolution" + (EditorHelper.Instance.classScreenShot.M_ClassResolutionScreenShots.Count - 1) + "Height",
+                EditorHelper.Instance.classScreenShot.Height);
+
+                EditorHelper.Instance.classScreenShot.Width = 0;
+                EditorHelper.Instance.classScreenShot.Height = 0;
+                EditorHelper.Instance.classScreenShot.NameResolution = "";
+            }
+            else
+            {
+                Debug.Log("<color=red>Разрешение с таким названием уже есть</color>");
+            }
+        }
+
+        /// <summary>
+        /// Отрисовываем настройки читов
+        /// </summary>
+        private void ViewEditorChets()
+        {
+            EditorGUILayout.BeginHorizontal();
+            EH_StaticParametrs.IsActiveCheats = GUILayout.Toggle(EH_StaticParametrs.IsActiveCheats, "isActiveCheats");
+
+            if (GUILayout.Button("Change"))
+            {
+                EH_StaticParametrs.IsActiveCheats = !EH_StaticParametrs.IsActiveCheats;
+                EditorHelper.Instance.Repaint();
+            }
+
+            if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
+            {
+                EditorUtility.DisplayDialog("",
+                                                        EH_StaticParametrs.TUTOR_CHEATS,
+                                                        "Ok");
+            }
+            EditorGUILayout.EndHorizontal();
+            if (EH_StaticParametrs.IsActiveCheats)
+            {
+                //TODO перенести весь интерфейс сюда
+                //ViewCheatsEdit();
+            }
         }
     }
 }

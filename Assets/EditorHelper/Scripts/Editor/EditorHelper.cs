@@ -20,12 +20,13 @@ namespace Editor_Helper
         private Vector2 scrollTempPrefs = Vector2.zero;
         private Vector2 scrollTempHardPrefs = Vector2.zero;
 
+        //TODO сделать адекватно, отдельными классами
         public List<ClassScenes> classScenes = new List<ClassScenes>();
         private List<ClassPrefs> classPrefs = new List<ClassPrefs>();
         private List<ClassPrefs> tempFindClassPrefs = new List<ClassPrefs>();
         private ClassPrefs tempClassPrefs = new ClassPrefs();
         private ClassAutoSave classAutoSave = new ClassAutoSave();
-        private ClassScreenShot classScreenShot = null;
+        public ClassScreenShot classScreenShot = null;
          
         private bool isActiveEditor = false;
         private bool isEditorSave = false;
@@ -258,6 +259,20 @@ namespace Editor_Helper
                 }
             }
         }
+
+        /// <summary>
+        /// Добавляем новое разрешение во время создания скриншота
+        /// </summary>
+        public void AddResolution(string name, int width, int height)
+        {
+            if (ClassScreenShot.FindSize(ClassScreenShot.GetCurrentGroupType(), name) == -1)
+            {
+                ClassScreenShot.AddCustomSize(ClassScreenShot.GetCurrentGroupType(),
+                    width,
+                    height,
+                    name);
+            }
+        }
         #endregion StartMethods
 
         #region Updates
@@ -319,13 +334,13 @@ namespace Editor_Helper
                                                 (isActiveEditor == true ? "↑  " : "↓  ") + "Editor",
                                                 EditorStyles.boldLabel);
             if (isActiveEditor)
-            {                
+            {
                 //ViewEditorTimeScale();
                 //ViewEditorScenes();
-                ViewEditorAutoSave();
-                ViewEditorClearPrefs();
-                ViewEditorScreenShot();
-                ViewEditorChets();
+                //ViewEditorAutoSave();
+                //ViewEditorClearPrefs();
+                //ViewEditorScreenShot();
+                ViewCheatsEdit();
 
                 if (isEditorSave)
                 {
@@ -340,80 +355,7 @@ namespace Editor_Helper
                 }
             }
             GUILayout.EndScrollView();
-        }                
-
-        /// <summary>
-        /// Отрисовываем настройки автосохранения сцен
-        /// </summary>
-        private void ViewEditorAutoSave()
-        {
-            EditorGUILayout.BeginHorizontal();
-            EH_StaticParametrs.IsActiveAutoSave = GUILayout.Toggle(EH_StaticParametrs.IsActiveAutoSave, "isActiveAutoSave");
-            if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
-            {
-                EditorUtility.DisplayDialog("",
-                                                        EH_StaticParametrs.TUTOR_AUTO_SAVE,
-                                                        "Ok");
-            }
-            EditorGUILayout.EndHorizontal();
-        }
-
-        /// <summary>
-        /// Отрисовываем настройки очистки префсов
-        /// </summary>
-        private void ViewEditorClearPrefs()
-        {
-            EditorGUILayout.BeginHorizontal();
-            EH_StaticParametrs.IsActiveClearPrefs = GUILayout.Toggle(EH_StaticParametrs.IsActiveClearPrefs, "isActiveClearPrefs");
-            if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
-            {
-                EditorUtility.DisplayDialog("",
-                                                        EH_StaticParametrs.TUTOR_CLEAR_PREFS,
-                                                        "Ok");
-            }
-            EditorGUILayout.EndHorizontal();
-        }
-
-        /// <summary>
-        /// Отрисовываем настройки скринов
-        /// </summary>
-        private void ViewEditorScreenShot()
-        {
-            EditorGUILayout.BeginHorizontal();
-            EH_StaticParametrs.IsActiveScreenShot = GUILayout.Toggle(EH_StaticParametrs.IsActiveScreenShot, "isActiveScreenShot");
-            if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
-            {
-                EditorUtility.DisplayDialog("",
-                                                        EH_StaticParametrs.TUTOR_SCREEN_SHOTS,
-                                                        "Ok");
-            }
-            EditorGUILayout.EndHorizontal();
-            if (EH_StaticParametrs.IsActiveScreenShot)
-            {
-                ViewScreenShotParams();
-            }
-        }
-
-        /// <summary>
-        /// Отрисовываем настройки читов
-        /// </summary>
-        private void ViewEditorChets()
-        {
-            EditorGUILayout.BeginHorizontal();
-            EH_StaticParametrs.IsActiveCheats = GUILayout.Toggle(EH_StaticParametrs.IsActiveCheats, "isActiveCheats");
-
-            if (GUILayout.Button("?", GUILayout.MaxWidth(30.0f)))
-            {
-                EditorUtility.DisplayDialog("",
-                                                        EH_StaticParametrs.TUTOR_CHEATS,
-                                                        "Ok");
-            }
-            EditorGUILayout.EndHorizontal();
-            if (EH_StaticParametrs.IsActiveCheats)
-            {
-                ViewCheatsEdit();
-            }
-        }
+        }   
 
         /// <summary>
         /// Сохраняем какие функции мы будем использовать
@@ -1337,124 +1279,8 @@ namespace Editor_Helper
             CheckDisableInterface(isActive);
             classScreenShot.IsActiveScreen = isActive;
         }
+               
 
-        /// <summary>
-        /// Отрисовываем настройки скринов
-        /// </summary>
-        private void ViewScreenShotParams()
-        {
-            isViewScreenShotParams = GUILayout.Toggle(isViewScreenShotParams,
-                                                       (isViewScreenShotParams == true ? "↑↑  " : "↓↓  ") + "ScreenShotParams",
-                                                       EditorStyles.boldLabel);
-            if (isViewScreenShotParams)
-            {
-                if (GUILayout.Button("Add Folder For ScreenShots"))
-                {
-                    classScreenShot.PathFolderForScreenShot = EditorUtility.OpenFolderPanel("Folder For ScreenShots", "", "");
-                    EditorPrefs.SetString(Application.productName + "PathForScreenShots", classScreenShot.PathFolderForScreenShot);
-                }
-
-                classScreenShot.NameResolution =
-                EditorGUILayout.TextField("NameResolution = ", classScreenShot.NameResolution);
-                classScreenShot.Width =
-                EditorGUILayout.IntField("Width = ", classScreenShot.Width);
-                classScreenShot.Height =
-                EditorGUILayout.IntField("Height = ", classScreenShot.Height);
-
-                GUILayout.Space(10f);
-
-                if (GUILayout.Button("Add Resolution"))
-                {
-                    if (classScreenShot.Width != 0 &&
-                        classScreenShot.Height != 0 &&
-                        classScreenShot.NameResolution != "")
-                    {
-                        AddResolution();
-                    }
-                    else
-                    {
-                        Debug.Log("<color=red>Заполни все поля для нового разрешения</color>");
-                    }
-                }
-
-                if (GUILayout.Button("Delete last Resolution"))
-                {
-                    if (EditorUtility.DisplayDialog("",
-                         "Удаляем последнее разрешение?",
-                         "Удалить",
-                         "Отмена"))
-                    {
-                        if (classScreenShot.M_ClassResolutionScreenShots.Count > 0)
-                        {
-                            EditorPrefs.DeleteKey("Resolution" +
-                            (classScreenShot.M_ClassResolutionScreenShots.Count - 1) + "NameResolution");
-                            EditorPrefs.DeleteKey("Resolution" +
-                            (classScreenShot.M_ClassResolutionScreenShots.Count - 1) + "Width");
-                            EditorPrefs.DeleteKey("Resolution" +
-                            (classScreenShot.M_ClassResolutionScreenShots.Count - 1) + "Height");
-
-                            classScreenShot.M_ClassResolutionScreenShots.RemoveAt(classScreenShot.M_ClassResolutionScreenShots.Count - 1);
-                        }
-                    }
-                }
-                GUILayout.Label("------------------------", EditorStyles.boldLabel);
-            }
-        }
-
-        /// <summary>
-        /// Добавляем новое разрешение
-        /// </summary>
-        private void AddResolution()
-        {
-            if (ClassScreenShot.FindSize(ClassScreenShot.GetCurrentGroupType(), classScreenShot.NameResolution) == -1)
-            {
-                ClassScreenShot.AddCustomSize(ClassScreenShot.GetCurrentGroupType(),
-                    classScreenShot.Width,
-                    classScreenShot.Height,
-                    classScreenShot.NameResolution);
-
-                ClassResolution tempClassResolution = new ClassResolution();
-                classScreenShot.M_ClassResolutionScreenShots.Add(tempClassResolution);
-
-                classScreenShot.M_ClassResolutionScreenShots
-                [classScreenShot.M_ClassResolutionScreenShots.Count - 1].Width = classScreenShot.Width;
-
-                classScreenShot.M_ClassResolutionScreenShots
-                [classScreenShot.M_ClassResolutionScreenShots.Count - 1].Height = classScreenShot.Height;
-
-                classScreenShot.M_ClassResolutionScreenShots
-                [classScreenShot.M_ClassResolutionScreenShots.Count - 1].NameResolution = classScreenShot.NameResolution;
-
-                EditorPrefs.SetString("Resolution" + (classScreenShot.M_ClassResolutionScreenShots.Count - 1) + "NameResolution",
-                classScreenShot.NameResolution);
-                EditorPrefs.SetInt("Resolution" + (classScreenShot.M_ClassResolutionScreenShots.Count - 1) + "Width",
-                classScreenShot.Width);
-                EditorPrefs.SetInt("Resolution" + (classScreenShot.M_ClassResolutionScreenShots.Count - 1) + "Height",
-                classScreenShot.Height);
-
-                classScreenShot.Width = 0;
-                classScreenShot.Height = 0;
-                classScreenShot.NameResolution = "";
-            }
-            else
-            {
-                Debug.Log("<color=red>Разрешение с таким названием уже есть</color>");
-            }
-        }
-
-        /// <summary>
-        /// Добавляем новое разрешение во время создания скриншота
-        /// </summary>
-        private void AddResolution(string name, int width, int height)
-        {
-            if (ClassScreenShot.FindSize(ClassScreenShot.GetCurrentGroupType(), name) == -1)
-            {
-                ClassScreenShot.AddCustomSize(ClassScreenShot.GetCurrentGroupType(),
-                    width,
-                    height,
-                    name);
-            }
-        }
         /// <summary>
         /// Делаем скрины на разные разрешения с задержкой в пол секунды 
         /// </summary>
