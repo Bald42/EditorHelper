@@ -12,7 +12,7 @@ namespace Editor_Helper
     {
         public const string VERSION = "V 1.9.21";
 
-        #region StringsTutors
+        #region StringsConst
         public const string TUTOR_IN_START = "\tEditorHelper - предназначен для упрощения разработки и тестирования приложений. " +
                                           "Внизу есть вкладка Editor где можно включать, отключать и настраивать имеющиеся функции.\n" +
                                           "\tБольшинство параметров окна сохраняются в EditorPrefs и привзяваются к productName, " +
@@ -53,7 +53,11 @@ namespace Editor_Helper
 
         public const string ATTENTION = "Внимание!";
 
-        #endregion StringsTutors
+        public const string URL_LAST_VERSION = "https://github.com/Bald42/EditorHelper/tree/release";
+
+        public const string URL_ALL_VERSION = "https://github.com/Bald42/EditorHelper/tree/old_versions";
+
+        #endregion
 
         public static bool IsActiveClearPrefs = true;
         public static bool IsActiveCheats = true;

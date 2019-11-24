@@ -45,6 +45,21 @@ namespace Editor_Helper
             ViewEditor();
 
             GUILayout.EndScrollView();
+
+            if (GUILayout.Button("For develop"))
+            {
+
+            }
+
+            if (GUILayout.Button("View last version"))
+            {
+                Application.OpenURL(EH_StaticParametrs.URL_LAST_VERSION);
+            }
+
+            if (GUILayout.Button("View all versions"))
+            {
+                Application.OpenURL(EH_StaticParametrs.URL_ALL_VERSION);
+            }
         }
 
         /// <summary>
@@ -70,7 +85,7 @@ namespace Editor_Helper
             EH_StaticParametrs.IsActiveTimeScale = GUILayout.Toggle(EH_StaticParametrs.IsActiveTimeScale, "isActiveTimeScale");
 
             //TODO для теста
-            if (GUILayout.Button("Change"))
+            if (GUILayout.Button((!EH_StaticParametrs.IsActiveTimeScale).ToString(), GUILayout.MaxWidth(100.0f)))
             {
                 EH_StaticParametrs.IsActiveTimeScale = !EH_StaticParametrs.IsActiveTimeScale;
                 EditorHelper.Instance.Repaint();
@@ -82,6 +97,7 @@ namespace Editor_Helper
                                             EH_StaticParametrs.TUTUR_TIME_SCALE,
                                             "Ok");
             }
+
             EditorGUILayout.EndHorizontal();
             if (EH_StaticParametrs.IsActiveTimeScale)
             {
@@ -114,7 +130,7 @@ namespace Editor_Helper
             EditorGUILayout.BeginHorizontal();
             EH_StaticParametrs.IsActiveScenes = GUILayout.Toggle(EH_StaticParametrs.IsActiveScenes, "isActiveScenes");
 
-            if (GUILayout.Button("Change"))
+            if (GUILayout.Button((!EH_StaticParametrs.IsActiveScenes).ToString(), GUILayout.MaxWidth(100.0f)))
             {
                 EH_StaticParametrs.IsActiveScenes = !EH_StaticParametrs.IsActiveScenes;
                 EditorHelper.Instance.Repaint();
@@ -205,7 +221,7 @@ namespace Editor_Helper
             EditorGUILayout.BeginHorizontal();
             EH_StaticParametrs.IsActiveAutoSave = GUILayout.Toggle(EH_StaticParametrs.IsActiveAutoSave, "isActiveAutoSave");
 
-            if (GUILayout.Button("Change"))
+            if (GUILayout.Button((!EH_StaticParametrs.IsActiveAutoSave).ToString(), GUILayout.MaxWidth(100.0f)))
             {
                 EH_StaticParametrs.IsActiveAutoSave = !EH_StaticParametrs.IsActiveAutoSave;
                 EditorHelper.Instance.Repaint();
@@ -228,7 +244,7 @@ namespace Editor_Helper
             EditorGUILayout.BeginHorizontal();
             EH_StaticParametrs.IsActiveClearPrefs = GUILayout.Toggle(EH_StaticParametrs.IsActiveClearPrefs, "isActiveClearPrefs");
 
-            if (GUILayout.Button("Change"))
+            if (GUILayout.Button((!EH_StaticParametrs.IsActiveClearPrefs).ToString(), GUILayout.MaxWidth(100.0f)))
             {
                 EH_StaticParametrs.IsActiveClearPrefs = !EH_StaticParametrs.IsActiveClearPrefs;
                 EditorHelper.Instance.Repaint();
@@ -251,7 +267,7 @@ namespace Editor_Helper
             EditorGUILayout.BeginHorizontal();
             EH_StaticParametrs.IsActiveScreenShot = GUILayout.Toggle(EH_StaticParametrs.IsActiveScreenShot, "isActiveScreenShot");
 
-            if (GUILayout.Button("Change"))
+            if (GUILayout.Button((!EH_StaticParametrs.IsActiveScreenShot).ToString(), GUILayout.MaxWidth(100.0f)))
             {
                 EH_StaticParametrs.IsActiveScreenShot = !EH_StaticParametrs.IsActiveScreenShot;
                 EditorHelper.Instance.Repaint();
@@ -377,7 +393,7 @@ namespace Editor_Helper
             EditorGUILayout.BeginHorizontal();
             EH_StaticParametrs.IsActiveCheats = GUILayout.Toggle(EH_StaticParametrs.IsActiveCheats, "isActiveCheats");
 
-            if (GUILayout.Button("Change"))
+            if (GUILayout.Button((!EH_StaticParametrs.IsActiveCheats).ToString(), GUILayout.MaxWidth(100.0f)))
             {
                 EH_StaticParametrs.IsActiveCheats = !EH_StaticParametrs.IsActiveCheats;
                 EditorHelper.Instance.Repaint();
