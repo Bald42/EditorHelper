@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Editor_Helper
@@ -47,6 +48,11 @@ namespace Editor_Helper
                                          "\t Скрипт умеет работать как с PlayerPrefs так и с PlayerPrefsHelper (если в нем есть SetBool!). Для использования " +
                                          "второго надо добавить директиву PLAYER_PREFS_HELPER, она добавляется автоматически при открытие " +
                                          "окна. Но если вдруг надо удалить или добавить есть кнопка FIX PLAYER_PREFS_HELPER!";
+
+        public const string EDITOR = "Editor";
+
+        public const string ATTENTION = "Внимание!";
+
         #endregion StringsTutors
 
         public static bool IsActiveClearPrefs = true;
@@ -55,5 +61,35 @@ namespace Editor_Helper
         public static bool IsActiveScenes = true;
         public static bool IsActiveAutoSave = true;
         public static bool IsActiveScreenShot = true;
+
+        public static float minTimeScale = float.Epsilon;
+        public static float maxTimeScale = 5f;
+
+        /// <summary>
+        /// Сохраняем какие функции мы будем использовать
+        /// </summary>
+        public static void SaveEditorParams()
+        {
+            //TODO временное решение
+            EditorPrefs.SetBool(Application.productName + "IsActiveCheats", IsActiveCheats);
+            EditorPrefs.SetBool(Application.productName + "IsActiveTimeScale", IsActiveTimeScale);
+            EditorPrefs.SetBool(Application.productName + "IsActiveScenes", IsActiveScenes);
+            EditorPrefs.SetBool(Application.productName + "IsActiveAutoSave", IsActiveAutoSave);
+            EditorPrefs.SetBool(Application.productName + "IsActiveClearPrefs", IsActiveClearPrefs);
+            EditorPrefs.SetBool(Application.productName + "IsActiveScreenShot", IsActiveScreenShot);
+        }
+
+        /// <summary>
+        /// Загружаем какие функции мы будем использовать
+        /// </summary>
+        public static void LoadEditorParams()
+        {
+            IsActiveCheats = EditorPrefs.GetBool(Application.productName + "IsActiveCheats", true);
+            IsActiveTimeScale = EditorPrefs.GetBool(Application.productName + "IsActiveTimeScale", true);
+            IsActiveScenes = EditorPrefs.GetBool(Application.productName + "IsActiveScenes", true);
+            IsActiveAutoSave = EditorPrefs.GetBool(Application.productName + "IsActiveAutoSave", true);
+            IsActiveClearPrefs = EditorPrefs.GetBool(Application.productName + "IsActiveClearPrefs", true);
+            IsActiveScreenShot = EditorPrefs.GetBool(Application.productName + "IsActiveScreenShot", true);
+        }
     }
 }
