@@ -49,6 +49,19 @@ namespace Editor_Helper
                                          "второго надо добавить директиву PLAYER_PREFS_HELPER, она добавляется автоматически при открытие " +
                                          "окна. Но если вдруг надо удалить или добавить есть кнопка FIX PLAYER_PREFS_HELPER!";
 
+        public const string CLEAR_EDITOR_PREFS = "Преждем чем нажать знай,\n" +
+                         "что всё может решительно пойти по пизде!!!\n" +
+                         "Точно перестают компилиться ВСЕ скрипты в проекте " +
+                         "(лечится путём перезапуска Юньки)\n" +
+                         "Возмонжно у тебя будет импотенция, сдвинется ось земли, " +
+                         "а президентом России станет негр гей. Я хз какие будут последствия!\n" +
+                         "Но если тебе очень надо почистить EditorPrefs жмякай ОК на свой страх и риск.";
+
+
+        public const string DOWNLOAD_LAST = "Download last version";
+
+        public const string DOWNLOAD_ALL = "Download all versions";
+
         public const string EDITOR = "Editor";
 
         public const string ATTENTION = "Внимание!";

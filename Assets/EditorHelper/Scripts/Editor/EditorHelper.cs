@@ -13,6 +13,7 @@ namespace Editor_Helper
     /// </summary>
     public class EditorHelper : EditorWindow
     {
+        //TODO скорей всего синглтон лишний
         public static EditorHelper Instance = null;
 
         private Vector2 scrollPosGlobal = Vector2.zero;
@@ -32,7 +33,6 @@ namespace Editor_Helper
         private bool isEditorSave = false;
 
         private bool isViewClearPrefs = false;
-        private bool isViewClearEditorPrefs = false;
         private bool isViewCheats = false;
         private bool isViewCheatsEdit = false;
         private bool isViewCreateCheats = false;
@@ -63,20 +63,29 @@ namespace Editor_Helper
         private static void Init()
         {
             EditorHelper window = (EditorHelper)EditorWindow.GetWindow(typeof(EditorHelper));
-            Instance = window;
-            Instance.title = "EditorHelper";
-            Instance.Show();
+            window.title = "EditorHelper";
+            window.Show();
+        }
+
+        private void OnEnable()
+        {
+            if (!Instance)
+            {
+                Instance = (EditorHelper)EditorWindow.GetWindow(typeof(EditorHelper));
+            }
         }
 
         private void OnDestroy ()
         {
             Instance = null;
+            EditorWindow.GetWindow(typeof(EH_Editor)).Close();
+            EditorWindow.GetWindow(typeof(EH_Develop)).Close();
         }
 
         /// <summary>
         /// Показываем окно
         /// </summary>
-        //TODO не помню зачем это, но кажется это песполезная хрень
+        //TODO не помню зачем это, но кажется это бесполезная хрень
         /*public static void ShowWindow()
         {
             EditorWindow.GetWindow(typeof(EditorHelper));
@@ -983,52 +992,14 @@ namespace Editor_Helper
         {
             if (EH_StaticParametrs.IsActiveClearPrefs)
             {
-                isViewClearPrefs = GUILayout.Toggle(isViewClearPrefs,
-                                                    (isViewClearPrefs == true ? "↑  " : "↓  ") + "ClearPrefs",
-                                                    EditorStyles.boldLabel);
-                if (isViewClearPrefs)
+                if (GUILayout.Button("Clear PlayerPrefs"))
                 {
-                    ViewGuiClearEditorPrefs();
-
-                    if (GUILayout.Button("Clear PlayerPrefs"))
-                    {
 #if !PLAYER_PREFS_HELPER
-                        PlayerPrefs.DeleteAll();
+                    PlayerPrefs.DeleteAll();
 #else
                     PlayerPrefsHelper.DeleteAll();
 #endif
-                        Debug.Log("<color=green>Все префсы удалены</color>");
-                    }
-                }
-            }
-        }
-
-        private void ViewGuiClearEditorPrefs()
-        {
-            isViewClearEditorPrefs = GUILayout.Toggle(isViewClearEditorPrefs,
-                                                              (isViewClearEditorPrefs == true ? "↑↑  " : "↓↓  ") + "ClearEditorPrefs",
-                                                              EditorStyles.boldLabel);
-            if (isViewClearEditorPrefs)
-            {
-                GUILayout.Label("АХТУНГ!!!Может сломаться \nкомпиляция скриптов!!!", EditorStyles.boldLabel);
-                if (GUILayout.Button("Clear EditorPrefs"))
-                {
-                    if (EditorUtility.DisplayDialog("АХТУНГ!!!", "Если ты проигнорировал сообщение над кнопкой знай, " +
-                             "что всё может решительно пойти по пизде!!!\n" +
-                             "Точно перестают компилиться ВСЕ скрипты в проекте " +
-                             "(лечится путём перезапуска Юньки)\n" +
-                             "Возмонжно у тебя будет импотенция, сдвинется ось земли, " +
-                             "а президентом России станет негр гей. Я хз какие будут последствия!\n" +
-                             "Но если тебе очень надо почистить EditorPrefs жмякай ОК на свой страх и риск."
-                             , "OK", "Нахуй нахуй"))
-                    {
-                        Debug.Log("<color=red>Про секс можешь забыть</color>");
-                        EditorPrefs.DeleteAll();
-                    }
-                    else
-                    {
-                        Debug.Log("<color=green>Одобряю) реально непредсказуемая хуйня</color>");
-                    }
+                    Debug.Log("<color=green>Все префсы удалены</color>");
                 }
             }
         }

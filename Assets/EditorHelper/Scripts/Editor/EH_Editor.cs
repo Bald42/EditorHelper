@@ -48,15 +48,15 @@ namespace Editor_Helper
 
             if (GUILayout.Button("For develop"))
             {
-
+                EH_Develop.Open();
             }
 
-            if (GUILayout.Button("View last version"))
+            if (GUILayout.Button(EH_StaticParametrs.DOWNLOAD_LAST))
             {
                 Application.OpenURL(EH_StaticParametrs.URL_LAST_VERSION);
             }
 
-            if (GUILayout.Button("View all versions"))
+            if (GUILayout.Button(EH_StaticParametrs.DOWNLOAD_ALL))
             {
                 Application.OpenURL(EH_StaticParametrs.URL_ALL_VERSION);
             }
